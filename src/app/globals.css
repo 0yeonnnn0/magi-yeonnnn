@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "MAGI";
+  src: local("Courier New"), local("Consolas"), local("monospace");
+}
+
+:root {
+  --magi-bg: #0a0a0a;
+  --magi-green: #00ff41;
+  --magi-red: #ff1744;
+  --magi-blue: #2979ff;
+  --magi-orange: #ff9100;
+  --magi-yellow: #ffea00;
+  --magi-border: #1a3a1a;
+  --magi-text: #00ff41;
+  --magi-dim: #0d2b0d;
+  --scanline-opacity: 0.03;
+}
+
+body {
+  background: var(--magi-bg);
+  color: var(--magi-text);
+  font-family: "Courier New", Consolas, monospace;
+  overflow: hidden;
+}
+
+/* CRT scanline effect */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, var(--scanline-opacity)) 2px,
+    rgba(0, 255, 65, var(--scanline-opacity)) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* CRT flicker */
+@keyframes flicker {
+  0% { opacity: 0.97; }
+  50% { opacity: 1; }
+  100% { opacity: 0.98; }
+}
+
+body {
+  animation: flicker 0.15s infinite;
+}
+
+/* Glow animation for active panels */
+@keyframes glow-green {
+  0%, 100% { box-shadow: 0 0 5px #00ff4155, inset 0 0 5px #00ff4111; }
+  50% { box-shadow: 0 0 20px #00ff4155, inset 0 0 10px #00ff4122; }
+}
+
+@keyframes glow-red {
+  0%, 100% { box-shadow: 0 0 5px #ff174455, inset 0 0 5px #ff174411; }
+  50% { box-shadow: 0 0 20px #ff174455, inset 0 0 10px #ff174422; }
+}
+
+@keyframes glow-blue {
+  0%, 100% { box-shadow: 0 0 5px #2979ff55, inset 0 0 5px #2979ff11; }
+  50% { box-shadow: 0 0 20px #2979ff55, inset 0 0 10px #2979ff22; }
+}
+
+@keyframes processing {
+  0% { content: "PROCESSING"; }
+  33% { content: "PROCESSING."; }
+  66% { content: "PROCESSING.."; }
+  100% { content: "PROCESSING..."; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Vote stamp animation */
+@keyframes stamp {
+  0% { transform: scale(3) rotate(-15deg); opacity: 0; }
+  60% { transform: scale(1) rotate(-15deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-15deg); opacity: 1; }
+}
+
+.stamp-in {
+  animation: stamp 0.4s ease-out forwards;
+}
+
+/* Panel thinking blink — irregular flicker like a CRT warming up */
+@keyframes thinking-red {
+  0%, 100% { border-color: #ff174444; }
+  15% { border-color: #ff1744cc; }
+  30% { border-color: #ff174422; }
+  50% { border-color: #ff1744ee; }
+  70% { border-color: #ff174433; }
+  85% { border-color: #ff1744bb; }
+}
+@keyframes thinking-blue {
+  0%, 100% { border-color: #2979ff44; }
+  15% { border-color: #2979ffcc; }
+  30% { border-color: #2979ff22; }
+  50% { border-color: #2979ffee; }
+  70% { border-color: #2979ff33; }
+  85% { border-color: #2979ffbb; }
+}
+@keyframes thinking-green {
+  0%, 100% { border-color: #00ff4144; }
+  15% { border-color: #00ff41cc; }
+  30% { border-color: #00ff4122; }
+  50% { border-color: #00ff41ee; }
+  70% { border-color: #00ff4133; }
+  85% { border-color: #00ff41bb; }
+}
+
+/* Winner panel — bright persistent glow */
+@keyframes winner-red {
+  0%, 100% { box-shadow: 0 0 15px #ff1744aa, inset 0 0 20px #ff174433; border-color: #ff1744; }
+  50% { box-shadow: 0 0 30px #ff1744cc, inset 0 0 30px #ff174444; border-color: #ff1744; }
+}
+@keyframes winner-blue {
+  0%, 100% { box-shadow: 0 0 15px #2979ffaa, inset 0 0 20px #2979ff33; border-color: #2979ff; }
+  50% { box-shadow: 0 0 30px #2979ffcc, inset 0 0 30px #2979ff44; border-color: #2979ff; }
+}
+@keyframes winner-green {
+  0%, 100% { box-shadow: 0 0 15px #00ff41aa, inset 0 0 20px #00ff4133; border-color: #00ff41; }
+  50% { box-shadow: 0 0 30px #00ff41cc, inset 0 0 30px #00ff4144; border-color: #00ff41; }
+}
+
+/* Ready panel — subtle pulse when answer is ready but not yet viewed */
+@keyframes ready-pulse-red {
+  0%, 100% { box-shadow: 0 0 5px #ff174455; }
+  50% { box-shadow: 0 0 15px #ff174488; }
+}
+@keyframes ready-pulse-blue {
+  0%, 100% { box-shadow: 0 0 5px #2979ff55; }
+  50% { box-shadow: 0 0 15px #2979ff88; }
+}
+@keyframes ready-pulse-green {
+  0%, 100% { box-shadow: 0 0 5px #00ff4155; }
+  50% { box-shadow: 0 0 15px #00ff4188; }
+}
+
+/* Typing dots for chat */
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px); }
+}
+
+.dot-1 { animation: dot-bounce 1.4s infinite 0s; }
+.dot-2 { animation: dot-bounce 1.4s infinite 0.2s; }
+.dot-3 { animation: dot-bounce 1.4s infinite 0.4s; }
+
+/* Bottom sheet slide up */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Mobile: allow scroll on body */
+@media (max-width: 640px) {
+  body {
+    overflow: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #00ff4133;
+}
