@@ -40,7 +40,8 @@ export default function MagiSystem() {
     setWinnerIndex(null);
     setDetailIndex(null);
     setDeliberation(undefined);
-    setPanelStates(["thinking", "thinking", "thinking"]);
+    // Start with only the first agent thinking
+    setPanelStates(["thinking", "idle", "idle"]);
 
     try {
       const data = await consultMagi(message, sessionId);
@@ -57,17 +58,21 @@ export default function MagiSystem() {
 
       setResponse(data);
 
-      // Sequentially set panels to "ready"
-      const delays = [800, 1800, 2800];
-      delays.forEach((delay, i) => {
-        setTimeout(() => {
-          setPanelStates((prev) => {
-            const next = [...prev];
-            next[i] = "ready";
-            return next;
-          });
-        }, delay);
-      });
+      // Sequential: think → ready, one at a time
+      // Agent 0: already thinking → ready at 800ms, Agent 1 starts thinking
+      setTimeout(() => {
+        setPanelStates(["ready", "thinking", "idle"]);
+      }, 800);
+
+      // Agent 1: thinking → ready at 1800ms, Agent 2 starts thinking
+      setTimeout(() => {
+        setPanelStates(["ready", "ready", "thinking"]);
+      }, 1800);
+
+      // Agent 2: thinking → ready at 2800ms
+      setTimeout(() => {
+        setPanelStates(["ready", "ready", "ready"]);
+      }, 2800);
 
       setTimeout(() => {
         setLoading(false);
