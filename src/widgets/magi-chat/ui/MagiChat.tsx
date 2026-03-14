@@ -132,7 +132,7 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="고민을 입력하세요..."
+          placeholder="write your concern..."
           disabled={loading}
           rows={1}
           className="flex-1 bg-transparent text-sm placeholder:opacity-80 resize-none leading-snug overflow-y-auto"
