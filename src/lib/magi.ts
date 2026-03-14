@@ -80,7 +80,7 @@ async function getCrossComment(
     messages: [
       {
         role: "system",
-        content: `너는 ${commenterName}이다. ${perspective} 관점의 시스템이다. 상대 시스템의 의견에 대해 한 줄로 짧게 첨언해. 반드시 JSON으로 응답: {"comment": "한 줄 첨언"}`,
+        content: `너는 ${commenterName}이다. ${perspective}에서 출발한 시스템이다. 상대 시스템의 의견에 대해 한 줄로 짧게 첨언해. 반드시 JSON으로 응답: {"comment": "한 줄 첨언"}`,
       },
       {
         role: "user",
