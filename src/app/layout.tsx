@@ -4,6 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "MAGI SYSTEM",
   description: "NERV MAGI Decision Support System",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MAGI",
+  },
 };
 
 export const viewport: Viewport = {
