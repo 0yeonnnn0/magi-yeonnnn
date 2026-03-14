@@ -59,6 +59,7 @@ export default function MagiSystem() {
         setPanelStates(["idle", "idle", "idle"]);
         setDeliberation("WELCOME");
         addSystemMessage(
+          "MAGI SYSTEM에 오신 것을 환영합니다.\n\n" +
           "저는 3개의 시스템이 토론하여 당신의 고민을 판정하는 MAGI입니다.\n\n" +
           "• MELCHIOR — 찬성 관점의 시스템\n" +
           "• BALTHASAR — 중립적 심판\n" +
