@@ -48,6 +48,7 @@ export default function MagiSystem() {
     setDeliberation(undefined);
     setAskQuestions([]);
     setShowAskModal(false);
+    // MELCHIOR(0) thinks first
     setPanelStates(["thinking", "idle", "idle"]);
 
     try {
@@ -81,16 +82,19 @@ export default function MagiSystem() {
 
       setResponse(data);
 
+      // 1. MELCHIOR(0) done → CASPER(2) thinks
       setTimeout(() => {
-        setPanelStates(["selected", "thinking", "idle"]);
+        setPanelStates(["selected", "idle", "thinking"]);
         setRevealedPanels([true, false, false]);
       }, 800);
 
+      // 2. CASPER(2) done → BALTHASAR(1) thinks last (judge)
       setTimeout(() => {
-        setPanelStates(["selected", "selected", "thinking"]);
-        setRevealedPanels([true, true, false]);
+        setPanelStates(["selected", "thinking", "selected"]);
+        setRevealedPanels([true, false, true]);
       }, 1800);
 
+      // 3. BALTHASAR(1) done — all revealed
       setTimeout(() => {
         setPanelStates(["selected", "selected", "selected"]);
         setRevealedPanels([true, true, true]);
