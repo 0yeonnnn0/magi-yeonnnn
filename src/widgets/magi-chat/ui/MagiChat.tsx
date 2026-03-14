@@ -126,7 +126,7 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
         className="flex items-end gap-2 px-3 py-2 border-t"
         style={{ borderColor: "#ff6a0044", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
       >
-        <span className="text-[10px] py-1" style={{ color: "#ff6a00aa" }}>{">"}</span>
+        <span className="text-[10px] py-1" style={{ color: "#ff6a00" }}>{">"}</span>
         <textarea
           ref={textareaRef}
           value={input}
@@ -135,7 +135,7 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
           placeholder="고민을 입력하세요..."
           disabled={loading}
           rows={1}
-          className="flex-1 bg-transparent text-sm placeholder:opacity-50 resize-none leading-snug overflow-y-auto"
+          className="flex-1 bg-transparent text-sm placeholder:opacity-80 resize-none leading-snug overflow-y-auto"
           style={{ color: "#ff6a00", caretColor: "#ff6a00", outline: "none", maxHeight: "60px" }}
         />
         <button
