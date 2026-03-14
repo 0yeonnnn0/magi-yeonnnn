@@ -225,14 +225,14 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
         style={{ zIndex: 1, pointerEvents: "none" }}
       >
         {/* BALTHASAR bottom-left cut → CASPER top-right cut */}
-        <line x1="38%" y1="40%" x2="33.5%" y2="50.5%" stroke="#ff6a00" strokeWidth="2.5" />
+        <line x1="38%" y1="47%" x2="33.5%" y2="57.5%" stroke="#ff6a00" strokeWidth="2.5" />
         {/* BALTHASAR bottom-right cut → MELCHIOR top-left cut */}
-        <line x1="62%" y1="40%" x2="66.5%" y2="50.5%" stroke="#ff6a00" strokeWidth="2.5" />
+        <line x1="62%" y1="47%" x2="66.5%" y2="57.5%" stroke="#ff6a00" strokeWidth="2.5" />
         {/* CASPER right edge → MELCHIOR left edge */}
-        <line x1="43.6%" y1="68%" x2="56.4%" y2="68%" stroke="#ff6a00" strokeWidth="2.5" />
+        <line x1="43.6%" y1="75%" x2="56.4%" y2="75%" stroke="#ff6a00" strokeWidth="2.5" />
         <text
           x="50%"
-          y="57%"
+          y="64%"
           textAnchor="middle"
           fill="#ff3333"
           fontSize="13"
@@ -247,7 +247,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
       {/* BALTHASAR — top center */}
       <div
         className="absolute z-10"
-        style={{ top: 0, left: "50%", transform: "translateX(-50%)", width: "42%", height: "46%" }}
+        style={{ top: 20, left: "50%", transform: "translateX(-50%)", width: "42%", height: "46%" }}
       >
         <PanelBox
           name="BALTHASAR"
@@ -261,7 +261,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
       {/* CASPER — bottom left */}
       <div
         className="absolute z-10"
-        style={{ bottom: 36, left: "2%", width: "42%", height: "42%" }}
+        style={{ bottom: 16, left: "2%", width: "42%", height: "42%" }}
       >
         <PanelBox
           name="CASPER"
@@ -275,7 +275,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
       {/* MELCHIOR — bottom right */}
       <div
         className="absolute z-10"
-        style={{ bottom: 36, right: "2%", width: "42%", height: "42%" }}
+        style={{ bottom: 16, right: "2%", width: "42%", height: "42%" }}
       >
         <PanelBox
           name="MELCHIOR"
