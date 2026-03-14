@@ -22,8 +22,10 @@ const HOLD_BG = "#c0a870";
 
 function getResultColor(agent?: AgentResult) {
   if (!agent || agent.action !== "vote") return NEUTRAL.panelBg;
-  if (agent.decision === "찬성") return POSITIVE_BG;
-  if (agent.decision === "반대") return NEGATIVE_BG;
+  // Use finalDecision if available (after debate), otherwise initial decision
+  const decision = agent.finalDecision ?? agent.decision;
+  if (decision === "찬성") return POSITIVE_BG;
+  if (decision === "반대") return NEGATIVE_BG;
   return HOLD_BG;
 }
 

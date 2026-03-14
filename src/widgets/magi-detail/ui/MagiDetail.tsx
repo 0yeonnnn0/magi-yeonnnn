@@ -12,8 +12,9 @@ interface MagiDetailProps {
 
 function getDecisionColor(agent: AgentResult) {
   if (agent.action !== "vote") return { main: "#888888", bg: "#88888822", border: "#88888844" };
-  if (agent.decision === "찬성") return { main: "#6ec6ff", bg: "#6ec6ff22", border: "#6ec6ff44" };
-  if (agent.decision === "반대") return { main: "#ff4444", bg: "#ff444422", border: "#ff444444" };
+  const decision = agent.finalDecision ?? agent.decision;
+  if (decision === "찬성") return { main: "#6ec6ff", bg: "#6ec6ff22", border: "#6ec6ff44" };
+  if (decision === "반대") return { main: "#ff4444", bg: "#ff444422", border: "#ff444444" };
   return { main: "#888888", bg: "#88888822", border: "#88888844" };
 }
 
@@ -122,6 +123,27 @@ export function MagiDetail({ name, agent, isWinner, onClose }: MagiDetailProps) 
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Persuasion result (MELCHIOR / CASPER only) */}
+            {agent.finalDecision && (
+              <div
+                className="px-3 py-2.5 border rounded text-sm leading-relaxed"
+                style={{
+                  borderColor: agent.persuaded ? "#ffaa0033" : "#ffffff11",
+                  background: agent.persuaded ? "#ffaa0008" : "#ffffff04",
+                }}
+              >
+                <span className="text-[10px] tracking-widest block mb-1.5" style={{ color: "#ff6a0066" }}>
+                  {agent.persuaded ? "PERSUADED — 의견 변경" : "NOT PERSUADED — 의견 유지"}
+                </span>
+                <span style={{ color: "#ffffffbb" }}>
+                  최종: <span style={{ color: agent.finalDecision === "찬성" ? "#6ec6ff" : "#ff4444", fontWeight: "bold" }}>
+                    {agent.finalDecision === "찬성" ? "APPROVE" : "DENY"}
+                  </span>
+                  {" — "}{agent.finalReason}
+                </span>
               </div>
             )}
           </div>
