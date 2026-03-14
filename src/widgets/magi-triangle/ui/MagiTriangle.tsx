@@ -173,7 +173,7 @@ function PanelBox({
 
 export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, loading, deliberation, onRetry, showRetry }: MagiTriangleProps) {
   return (
-    <div className="relative w-full" style={{ height: "280px" }}>
+    <div className="relative w-full" style={{ height: "min(280px, 40dvh)" }}>
       {/* System info — left of BALTHASAR */}
       <div
         className="absolute z-20 text-[10px] leading-relaxed"

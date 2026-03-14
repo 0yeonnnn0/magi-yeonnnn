@@ -59,8 +59,8 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {messages.length === 0 && !loading && (
-          <div className="text-[12px] text-center py-6" style={{ color: "#ff6a0033" }}>
-            당신의 고민은 무엇인가요? MAGI가 분석해드립니다.
+          <div className="text-[14px] text-center py-6 leading-loose" style={{ color: "#ff6a0033" }}>
+            What is your concern?<br /><br />MAGI will judge it.
           </div>
         )}
 
