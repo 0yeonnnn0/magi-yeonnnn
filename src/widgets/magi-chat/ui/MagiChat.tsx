@@ -52,14 +52,14 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
     <div
       className="flex flex-col border-t flex-1 min-h-0"
       style={{
-        borderColor: "#ff6a0033",
+        borderColor: "#ff6a0066",
         background: "#050505",
       }}
     >
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {messages.length === 0 && !loading && (
-          <div className="text-[14px] text-center py-6 leading-loose" style={{ color: "#ff6a0033" }}>
+          <div className="text-[14px] text-center py-6 leading-loose" style={{ color: "#ff6a0044" }}>
             What is your concern?<br /><br />MAGI will judge it.
           </div>
         )}
@@ -72,25 +72,25 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
             <div
               className={`max-w-[85%] px-3 py-2 rounded text-xs ${msg.tappable ? "cursor-pointer active:opacity-70" : ""}`}
               style={{
-                background: msg.role === "user" ? "#ff6a0012" : "#ffffff06",
-                color: msg.role === "user" ? "#ff6a00" : "#ff6a00aa",
-                border: `1px solid ${msg.role === "user" ? "#ff6a0033" : (msg.tappable || msg.hint) ? "#ff6a0033" : "#ffffff0e"}`,
+                background: msg.role === "user" ? "#ff6a0018" : "#ffffff0a",
+                color: msg.role === "user" ? "#ff6a00" : "#ff6a00cc",
+                border: `1px solid ${msg.role === "user" ? "#ff6a0055" : (msg.tappable || msg.hint) ? "#ff6a0055" : "#ffffff1a"}`,
               }}
               onClick={msg.tappable ? onTappableClick : undefined}
             >
               {msg.role === "system" && (
-                <span className="text-[10px] block mb-1" style={{ color: "#ff6a0044" }}>
+                <span className="text-[10px] block mb-1" style={{ color: "#ff6a0077" }}>
                   MAGI &gt;
                 </span>
               )}
               <span className="whitespace-pre-wrap">{msg.content}</span>
               {msg.tappable && (
-                <span className="text-[10px] block mt-1.5" style={{ color: "#ff6a0055" }}>
+                <span className="text-[10px] block mt-1.5" style={{ color: "#ff6a0088" }}>
                   ▶ 탭하여 답변
                 </span>
               )}
               {msg.hint && (
-                <span className="text-[10px] block mt-1.5" style={{ color: "#ff6a0055" }}>
+                <span className="text-[10px] block mt-1.5" style={{ color: "#ff6a0088" }}>
                   ▶ 모델을 탭하여 상세 의견 보기
                 </span>
               )}
@@ -103,16 +103,16 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
           <div className="flex justify-start">
             <div
               className="px-3 py-2 rounded text-xs"
-              style={{ background: "#ffffff06", border: "1px solid #ffffff0e" }}
+              style={{ background: "#ffffff0a", border: "1px solid #ffffff1a" }}
             >
-              <span className="text-[10px] block mb-1" style={{ color: "#ff6a0044" }}>
+              <span className="text-[10px] block mb-1" style={{ color: "#ff6a0077" }}>
                 MAGI &gt;
               </span>
-              <span style={{ color: "#ff6a00aa" }}>분석중</span>
+              <span style={{ color: "#ff6a00cc" }}>분석중</span>
               <span className="inline-flex ml-1 gap-[2px] align-middle">
-                <span className="dot-1 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00aa" }} />
-                <span className="dot-2 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00aa" }} />
-                <span className="dot-3 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00aa" }} />
+                <span className="dot-1 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
+                <span className="dot-2 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
+                <span className="dot-3 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
               </span>
             </div>
           </div>
@@ -124,9 +124,9 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
       {/* Input */}
       <div
         className="flex items-end gap-2 px-3 py-2 border-t"
-        style={{ borderColor: "#ff6a0022", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
+        style={{ borderColor: "#ff6a0044", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
       >
-        <span className="text-[10px] py-1" style={{ color: "#ff6a0033" }}>{">"}</span>
+        <span className="text-[10px] py-1" style={{ color: "#ff6a0066" }}>{">"}</span>
         <textarea
           ref={textareaRef}
           value={input}
@@ -135,14 +135,14 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
           placeholder="고민을 입력하세요..."
           disabled={loading}
           rows={1}
-          className="flex-1 bg-transparent text-sm placeholder:opacity-20 resize-none leading-snug overflow-y-auto"
+          className="flex-1 bg-transparent text-sm placeholder:opacity-30 resize-none leading-snug overflow-y-auto"
           style={{ color: "#ff6a00", caretColor: "#ff6a00", outline: "none", maxHeight: "60px" }}
         />
         <button
           onClick={handleSubmit}
           disabled={loading || !input.trim()}
           className="px-3 py-1.5 text-[10px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 flex-shrink-0"
-          style={{ borderColor: "#ff6a0044", color: "#ff6a00" }}
+          style={{ borderColor: "#ff6a0066", color: "#ff6a00" }}
         >
           SEND
         </button>
