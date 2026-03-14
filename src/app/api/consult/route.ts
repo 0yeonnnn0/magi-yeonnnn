@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
   try {
     const result = await consult(history);
 
-    if (result.phase === "blocked") {
-      // Remove user message from DB for blocked
+    if (result.phase === "greeting" || result.phase === "blocked") {
+      // Remove user message from DB for non-consultation
       await supabase
         .from("messages")
         .delete()

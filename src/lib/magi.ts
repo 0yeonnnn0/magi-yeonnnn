@@ -25,6 +25,7 @@ type AgentResult = AskResult | VoteResult;
 
 export type MagiResponse =
   | { phase: "blocked"; reason: string }
+  | { phase: "greeting" }
   | { phase: "ask"; agents: AgentResult[] }
   | {
       phase: "vote";
@@ -33,7 +34,7 @@ export type MagiResponse =
       agents: AgentResult[];
     };
 
-async function checkGuard(message: string): Promise<{ allowed: boolean; reason?: string }> {
+async function checkGuard(message: string): Promise<{ type: string; reason?: string }> {
   const res = await getClient().chat.completions.create({
     model: process.env.OPENAI_MODEL || "gpt-4o",
     messages: [
@@ -66,7 +67,10 @@ export async function consult(messages: Message[]): Promise<MagiResponse> {
 
   if (lastMessage && !isFollowUp) {
     const guard = await checkGuard(lastMessage);
-    if (!guard.allowed) {
+    if (guard.type === "greeting") {
+      return { phase: "greeting" };
+    }
+    if (guard.type === "blocked") {
       return { phase: "blocked", reason: guard.reason || "MAGI는 고민 상담만 가능합니다." };
     }
   }

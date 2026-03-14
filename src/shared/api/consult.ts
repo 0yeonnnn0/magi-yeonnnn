@@ -9,7 +9,7 @@ export type AgentResult = {
 
 export type MagiResponse = {
   sessionId: string;
-  phase: "ask" | "vote" | "blocked";
+  phase: "ask" | "vote" | "blocked" | "greeting";
   decision?: string;
   votes?: Record<string, number>;
   agents?: AgentResult[];

@@ -54,6 +54,22 @@ export default function MagiSystem() {
       const data = await consultMagi(message, sessionId);
       setSessionId(data.sessionId);
 
+      if (data.phase === "greeting") {
+        setLoading(false);
+        setPanelStates(["idle", "idle", "idle"]);
+        setDeliberation("WELCOME");
+        addSystemMessage(
+          "MAGI SYSTEM에 오신 것을 환영합니다.\n\n" +
+          "저는 3개의 AI 모델이 토론하여 당신의 고민을 판정하는 시스템입니다.\n\n" +
+          "• MELCHIOR — 찬성 관점에서 분석\n" +
+          "• BALTHASAR — 중립적 심판관\n" +
+          "• CASPER — 반대 관점에서 분석\n\n" +
+          "연애, 진로, 재정, 건강, 인생 등 어떤 고민이든 입력해주세요.\n" +
+          "3개의 모델이 토론 후 최종 판정을 내립니다."
+        );
+        return;
+      }
+
       if (data.phase === "blocked") {
         setLoading(false);
         setPanelStates(["idle", "idle", "idle"]);
