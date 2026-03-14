@@ -34,12 +34,16 @@ export type MagiResponse =
       agents: AgentResult[];
     };
 
-async function checkGuard(message: string): Promise<{ type: string; reason?: string }> {
+async function checkGuard(message: string, context?: string): Promise<{ type: string; reason?: string }> {
+  const userContent = context
+    ? `[context: 이전 질문들]\n${context}\n\n[사용자 답변]\n${message}`
+    : message;
+
   const res = await getClient().chat.completions.create({
     model: process.env.OPENAI_MODEL || "gpt-4o",
     messages: [
       { role: "system", content: guardPrompt },
-      { role: "user", content: message },
+      { role: "user", content: userContent },
     ],
     response_format: { type: "json_object" },
   });
@@ -65,13 +69,19 @@ export async function consult(messages: Message[]): Promise<MagiResponse> {
   // Skip guard when the user is replying to agent questions (history has assistant messages)
   const isFollowUp = messages.some((m) => m.role === "assistant");
 
-  if (lastMessage && !isFollowUp) {
-    const guard = await checkGuard(lastMessage);
-    if (guard.type === "greeting") {
+  if (lastMessage) {
+    // For follow-ups, pass previous assistant questions as context
+    const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+    const guard = await checkGuard(lastMessage, isFollowUp ? lastAssistant?.content : undefined);
+
+    if (guard.type === "greeting" && !isFollowUp) {
       return { phase: "greeting" };
     }
     if (guard.type === "blocked") {
-      return { phase: "blocked", reason: guard.reason || "MAGI는 고민 상담만 가능합니다." };
+      return {
+        phase: "blocked",
+        reason: isFollowUp ? "정상적인 답변을 작성해주세요." : (guard.reason || "MAGI는 고민 상담만 가능합니다."),
+      };
     }
   }
 
