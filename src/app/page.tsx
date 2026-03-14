@@ -160,7 +160,7 @@ export default function MagiSystem() {
   return (
     <div className="h-[100dvh] w-screen flex justify-center" style={{ background: "#000000" }}>
       <div className="h-full w-full max-w-[430px] flex flex-col relative" style={{ background: "#000000" }}>
-        <div className="flex items-center justify-center px-2 pt-2 pb-1 flex-shrink-0">
+        <div className="flex items-center justify-center px-2 pb-1 flex-shrink-0" style={{ paddingTop: "max(8px, env(safe-area-inset-top))" }}>
           <MagiTriangle
             panelStates={panelStates}
             agents={displayAgents}
