@@ -108,7 +108,7 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
               <span className="text-[10px] block mb-1" style={{ color: "#ff6a0077" }}>
                 MAGI &gt;
               </span>
-              <span style={{ color: "#ff6a00cc" }}>분석중</span>
+              <span style={{ color: "#ff6a00cc" }}>MAGI가 당신의 요청을 분석중입니다</span>
               <span className="inline-flex ml-1 gap-[2px] align-middle">
                 <span className="dot-1 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
                 <span className="dot-2 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
