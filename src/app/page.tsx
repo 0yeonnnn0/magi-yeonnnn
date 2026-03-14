@@ -39,6 +39,7 @@ export default function MagiSystem() {
       { id: crypto.randomUUID(), role: "user", content: message },
     ]);
 
+    const prevAskQuestions = [...askQuestions];
     setLastMessage(message);
     setLoading(true);
     setResponse(null);
@@ -77,6 +78,12 @@ export default function MagiSystem() {
         setPanelStates(["idle", "idle", "idle"]);
         setDeliberation("ACCESS DENIED");
         addSystemMessage(data.reason || "MAGI는 고민 상담만 가능합니다.");
+        // Restore ask modal if this was a follow-up answer rejection
+        if (prevAskQuestions.length > 0) {
+          setAskQuestions(prevAskQuestions);
+          addSystemMessage("답변을 다시 작성해주세요. 탭하여 답변해주세요.", true);
+          setShowAskModal(true);
+        }
         return;
       }
 
