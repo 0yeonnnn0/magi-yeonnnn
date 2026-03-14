@@ -162,9 +162,19 @@ export default function MagiSystem() {
   }
 
   function handleRetry() {
-    if (lastMessage && !loading) {
-      handleSend(lastMessage);
-    }
+    if (loading) return;
+    setSessionId(null);
+    setResponse(null);
+    setLoading(false);
+    setChatMessages([]);
+    setDeliberation(undefined);
+    setPanelStates(["idle", "idle", "idle"]);
+    setRevealedPanels([false, false, false]);
+    setWinnerIndex(null);
+    setDetailIndex(null);
+    setLastMessage(null);
+    setAskQuestions([]);
+    setShowAskModal(false);
   }
 
   function handleAskComplete(combinedAnswers: string) {
