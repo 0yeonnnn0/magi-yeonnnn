@@ -75,9 +75,30 @@ export async function consult(messages: Message[]): Promise<MagiResponse> {
     }
   }
 
-  const results = await Promise.all(
-    agents.map((agent) => callAgent(agent, messages))
-  );
+  // Call agents sequentially: MELCHIOR → CASPER → BALTHASAR
+  // Each agent sees previous agents' questions to avoid duplicates
+  const order = [0, 2, 1]; // MELCHIOR, CASPER, BALTHASAR
+  const results: AgentResult[] = [undefined!, undefined!, undefined!];
+  const priorQuestions: string[] = [];
+
+  for (const idx of order) {
+    const agent = agents[idx];
+    const agentMessages = [...messages];
+
+    if (priorQuestions.length > 0) {
+      agentMessages.push({
+        role: "assistant",
+        content: `다른 시스템이 이미 한 질문 (중복하지 마):\n${priorQuestions.join("\n")}`,
+      });
+    }
+
+    const result = await callAgent(agent, agentMessages);
+    results[idx] = result;
+
+    if (result.action === "ask") {
+      priorQuestions.push(`- ${result.agent}: ${result.question}`);
+    }
+  }
 
   const hasQuestion = results.some((r) => r.action === "ask");
 
