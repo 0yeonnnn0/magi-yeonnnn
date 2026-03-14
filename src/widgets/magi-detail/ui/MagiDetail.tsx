@@ -20,42 +20,47 @@ export function MagiDetail({ name, agent, isWinner, onClose }: MagiDetailProps) 
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70" />
+      <div className="absolute inset-0 bg-black/80" />
 
       {/* Bottom sheet */}
       <div
         className="relative w-full max-w-md rounded-t-lg border-t border-x p-5 pb-8
           animate-[slideUp_0.3s_ease-out]"
         style={{
-          borderColor: colors.border + "66",
-          background: colors.bg,
+          borderColor: colors.border + "44",
+          background: "#0a0a0a",
+          paddingBottom: "max(32px, env(safe-area-inset-bottom))",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle bar */}
         <div className="flex justify-center mb-4">
-          <div className="w-10 h-1 rounded-full" style={{ background: colors.text + "44" }} />
+          <div className="w-10 h-1 rounded-full" style={{ background: colors.text + "33" }} />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
+            <div
+              className="w-3 h-3 rounded-sm"
+              style={{ background: colors.panelBg }}
+            />
             <span className="text-sm font-bold tracking-widest" style={{ color: colors.text }}>
               {label}
             </span>
             {isWinner && (
               <span
                 className="text-[10px] px-2 py-0.5 rounded tracking-widest stamp-in"
-                style={{ background: colors.border + "33", color: colors.text }}
+                style={{ background: colors.border + "22", color: colors.text, border: `1px solid ${colors.border}44` }}
               >
-                ★ CONSENSUS PICK
+                ★ CONSENSUS
               </span>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-xs px-2 py-1 border rounded-sm hover:opacity-80"
-            style={{ borderColor: colors.text + "33", color: colors.text + "88" }}
+            className="text-[10px] px-2 py-1 border rounded-sm active:opacity-60"
+            style={{ borderColor: "#ffffff22", color: "#ffffff66" }}
           >
             CLOSE
           </button>
@@ -72,19 +77,19 @@ export function MagiDetail({ name, agent, isWinner, onClose }: MagiDetailProps) 
             </div>
 
             <div>
-              <div className="text-[10px] tracking-widest mb-1" style={{ color: colors.text + "55" }}>
+              <div className="text-[10px] tracking-widest mb-1.5" style={{ color: "#ff6a0066" }}>
                 ANALYSIS
               </div>
-              <div className="text-sm leading-relaxed" style={{ color: colors.text + "cc" }}>
+              <div className="text-sm leading-relaxed" style={{ color: "#ffffffbb" }}>
                 {agent.reason}
               </div>
             </div>
 
             <div
-              className="px-3 py-2 border rounded text-sm"
-              style={{ borderColor: colors.text + "22", color: colors.text + "aa" }}
+              className="px-3 py-2.5 border rounded text-sm leading-relaxed"
+              style={{ borderColor: "#ff6a0022", color: "#ffffffaa", background: "#ff6a0008" }}
             >
-              <span className="text-[10px] tracking-widest block mb-1" style={{ color: colors.text + "55" }}>
+              <span className="text-[10px] tracking-widest block mb-1.5" style={{ color: "#ff6a0066" }}>
                 ADVICE
               </span>
               {agent.advice}
@@ -95,10 +100,10 @@ export function MagiDetail({ name, agent, isWinner, onClose }: MagiDetailProps) 
         {/* Ask content */}
         {agent.action === "ask" && (
           <div className="space-y-3">
-            <div className="text-[10px] tracking-widest" style={{ color: colors.text + "55" }}>
+            <div className="text-[10px] tracking-widest" style={{ color: "#ff6a0066" }}>
               ADDITIONAL DATA REQUIRED
             </div>
-            <div className="text-sm" style={{ color: colors.text }}>
+            <div className="text-sm leading-relaxed" style={{ color: "#ffffffcc" }}>
               &quot;{agent.question}&quot;
             </div>
           </div>

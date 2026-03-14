@@ -6,16 +6,16 @@
 }
 
 :root {
-  --magi-bg: #0a0a0a;
-  --magi-green: #00ff41;
-  --magi-red: #ff1744;
-  --magi-blue: #2979ff;
-  --magi-orange: #ff9100;
+  --magi-bg: #000000;
+  --magi-green: #5cff8a;
+  --magi-red: #ff3333;
+  --magi-blue: #6ec6ff;
+  --magi-orange: #ff6a00;
   --magi-yellow: #ffea00;
   --magi-border: #1a3a1a;
   --magi-text: #00ff41;
   --magi-dim: #0d2b0d;
-  --scanline-opacity: 0.03;
+  --scanline-opacity: 0.02;
 }
 
 body {
@@ -23,6 +23,9 @@ body {
   color: var(--magi-text);
   font-family: "Courier New", Consolas, monospace;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 /* CRT scanline effect */
@@ -52,27 +55,20 @@ body {
   animation: flicker 0.15s infinite;
 }
 
-/* Glow animation for active panels */
+/* Pentagon panel glow animations */
 @keyframes glow-green {
-  0%, 100% { box-shadow: 0 0 5px #00ff4155, inset 0 0 5px #00ff4111; }
-  50% { box-shadow: 0 0 20px #00ff4155, inset 0 0 10px #00ff4122; }
+  0%, 100% { filter: drop-shadow(0 0 4px #5cff8a55); }
+  50% { filter: drop-shadow(0 0 12px #5cff8a66); }
 }
 
 @keyframes glow-red {
-  0%, 100% { box-shadow: 0 0 5px #ff174455, inset 0 0 5px #ff174411; }
-  50% { box-shadow: 0 0 20px #ff174455, inset 0 0 10px #ff174422; }
+  0%, 100% { filter: drop-shadow(0 0 4px #ff333355); }
+  50% { filter: drop-shadow(0 0 12px #ff333366); }
 }
 
 @keyframes glow-blue {
-  0%, 100% { box-shadow: 0 0 5px #2979ff55, inset 0 0 5px #2979ff11; }
-  50% { box-shadow: 0 0 20px #2979ff55, inset 0 0 10px #2979ff22; }
-}
-
-@keyframes processing {
-  0% { content: "PROCESSING"; }
-  33% { content: "PROCESSING."; }
-  66% { content: "PROCESSING.."; }
-  100% { content: "PROCESSING..."; }
+  0%, 100% { filter: drop-shadow(0 0 4px #6ec6ff55); }
+  50% { filter: drop-shadow(0 0 12px #6ec6ff66); }
 }
 
 @keyframes blink {
@@ -95,58 +91,30 @@ body {
   animation: stamp 0.4s ease-out forwards;
 }
 
-/* Panel thinking blink — irregular flicker like a CRT warming up */
-@keyframes thinking-red {
-  0%, 100% { border-color: #ff174444; }
-  15% { border-color: #ff1744cc; }
-  30% { border-color: #ff174422; }
-  50% { border-color: #ff1744ee; }
-  70% { border-color: #ff174433; }
-  85% { border-color: #ff1744bb; }
-}
-@keyframes thinking-blue {
-  0%, 100% { border-color: #2979ff44; }
-  15% { border-color: #2979ffcc; }
-  30% { border-color: #2979ff22; }
-  50% { border-color: #2979ffee; }
-  70% { border-color: #2979ff33; }
-  85% { border-color: #2979ffbb; }
-}
-@keyframes thinking-green {
-  0%, 100% { border-color: #00ff4144; }
-  15% { border-color: #00ff41cc; }
-  30% { border-color: #00ff4122; }
-  50% { border-color: #00ff41ee; }
-  70% { border-color: #00ff4133; }
-  85% { border-color: #00ff41bb; }
+/* Panel thinking — pulsing opacity */
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 /* Winner panel — bright persistent glow */
-@keyframes winner-red {
-  0%, 100% { box-shadow: 0 0 15px #ff1744aa, inset 0 0 20px #ff174433; border-color: #ff1744; }
-  50% { box-shadow: 0 0 30px #ff1744cc, inset 0 0 30px #ff174444; border-color: #ff1744; }
-}
 @keyframes winner-blue {
-  0%, 100% { box-shadow: 0 0 15px #2979ffaa, inset 0 0 20px #2979ff33; border-color: #2979ff; }
-  50% { box-shadow: 0 0 30px #2979ffcc, inset 0 0 30px #2979ff44; border-color: #2979ff; }
+  0%, 100% { filter: drop-shadow(0 0 8px #6ec6ffaa) drop-shadow(0 0 20px #6ec6ff44); }
+  50% { filter: drop-shadow(0 0 15px #6ec6ffcc) drop-shadow(0 0 30px #6ec6ff66); }
 }
 @keyframes winner-green {
-  0%, 100% { box-shadow: 0 0 15px #00ff41aa, inset 0 0 20px #00ff4133; border-color: #00ff41; }
-  50% { box-shadow: 0 0 30px #00ff41cc, inset 0 0 30px #00ff4144; border-color: #00ff41; }
+  0%, 100% { filter: drop-shadow(0 0 8px #5cff8aaa) drop-shadow(0 0 20px #5cff8a44); }
+  50% { filter: drop-shadow(0 0 15px #5cff8acc) drop-shadow(0 0 30px #5cff8a66); }
+}
+@keyframes winner-red {
+  0%, 100% { filter: drop-shadow(0 0 8px #ff3333aa) drop-shadow(0 0 20px #ff333344); }
+  50% { filter: drop-shadow(0 0 15px #ff3333cc) drop-shadow(0 0 30px #ff333366); }
 }
 
-/* Ready panel — subtle pulse when answer is ready but not yet viewed */
-@keyframes ready-pulse-red {
-  0%, 100% { box-shadow: 0 0 5px #ff174455; }
-  50% { box-shadow: 0 0 15px #ff174488; }
-}
-@keyframes ready-pulse-blue {
-  0%, 100% { box-shadow: 0 0 5px #2979ff55; }
-  50% { box-shadow: 0 0 15px #2979ff88; }
-}
-@keyframes ready-pulse-green {
-  0%, 100% { box-shadow: 0 0 5px #00ff4155; }
-  50% { box-shadow: 0 0 15px #00ff4188; }
+/* Ready panel pulse */
+@keyframes ready-pulse {
+  0%, 100% { filter: drop-shadow(0 0 3px currentColor); opacity: 0.7; }
+  50% { filter: drop-shadow(0 0 10px currentColor); opacity: 1; }
 }
 
 /* Typing dots for chat */
@@ -175,11 +143,16 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #000;
 }
 ::-webkit-scrollbar-thumb {
   background: #00ff4133;
+}
+
+/* Input focus */
+input:focus {
+  outline: none;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { AGENT_COLORS, AGENT_LABELS, DECISION_DISPLAY, type AgentName } from "@/shared/config";
+import { AGENT_LABELS, DECISION_DISPLAY, type AgentName } from "@/shared/config";
 import type { AgentResult } from "@/shared/api";
 import type { PanelState } from "@/widgets/magi-panel";
 
@@ -9,150 +9,280 @@ interface MagiTriangleProps {
   agents: (AgentResult | undefined)[];
   onPanelClick: (index: number) => void;
   winnerIndex: number | null;
+  loading: boolean;
+  deliberation?: string;
+  onRetry?: () => void;
+  showRetry?: boolean;
 }
 
-function getAnimation(name: AgentName, state: PanelState) {
-  const c = AGENT_COLORS[name];
-  switch (state) {
-    case "thinking":
-      return `${c.thinking} 0.8s ease-in-out infinite, ${c.glow} 2s ease-in-out infinite`;
-    case "ready":
-      return `${c.readyPulse} 1.5s ease-in-out infinite`;
-    case "winner":
-      return `${c.winner} 1.2s ease-in-out infinite`;
-    default:
-      return undefined;
-  }
+const NEUTRAL = { panelBg: "#b0b0b0" };
+const POSITIVE_BG = "#7db8e0";
+const NEGATIVE_BG = "#e08080";
+const HOLD_BG = "#c0a870";
+
+function getResultColor(agent?: AgentResult) {
+  if (!agent || agent.action !== "vote") return NEUTRAL.panelBg;
+  if (agent.decision === "찬성") return POSITIVE_BG;
+  if (agent.decision === "반대") return NEGATIVE_BG;
+  return HOLD_BG;
 }
 
-/**
- * Individual MAGI panel — styled like the anime screen:
- * Agent name on top, stamp box below
- */
+function getWinnerAnimation(agent?: AgentResult) {
+  if (!agent || agent.action !== "vote") return "winner-blue";
+  if (agent.decision === "반대") return "winner-red";
+  return "winner-blue";
+}
+
+function getResultTextColor(agent?: AgentResult) {
+  if (!agent || agent.action !== "vote") return "#6ec6ff";
+  if (agent.decision === "찬성") return "#6ec6ff";
+  if (agent.decision === "반대") return "#ff4444";
+  return "#ffaa00";
+}
+
+// Clip paths matching the anime:
+// BALTHASAR: rectangle with bottom-left & bottom-right corners cut (shield pointing down)
+// CASPER: rectangle with top-right corner cut
+// MELCHIOR: rectangle with top-left corner cut
+const CLIP_PATHS = {
+  top: "polygon(0% 0%, 100% 0%, 100% 65%, 70% 100%, 30% 100%, 0% 65%)",
+  "bottom-left": "polygon(0% 0%, 64% 0%, 100% 35%, 100% 100%, 0% 100%)",
+  "bottom-right": "polygon(36% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 35%)",
+};
+
 function PanelBox({
   name,
   state,
   agent,
   onClick,
+  variant,
 }: {
   name: AgentName;
   state: PanelState;
   agent?: AgentResult;
   onClick: () => void;
+  variant: "top" | "bottom-left" | "bottom-right";
 }) {
-  const colors = AGENT_COLORS[name];
   const label = AGENT_LABELS[name];
   const clickable = state === "ready" || state === "selected" || state === "winner";
 
+  const isThinking = state === "thinking";
+  const isWinner = state === "winner";
+  const isReady = state === "ready";
+  const isRevealed = state === "selected" || state === "winner";
+
+  const panelBg = isRevealed ? getResultColor(agent) : NEUTRAL.panelBg;
+  const clip = CLIP_PATHS[variant];
+
   return (
     <div
-      className={`flex flex-col items-center gap-1.5 ${clickable ? "cursor-pointer active:scale-95" : ""} transition-transform`}
+      className={`relative w-full h-full ${clickable ? "cursor-pointer active:scale-[0.97]" : ""} transition-transform duration-150`}
       onClick={clickable ? onClick : undefined}
+      style={{ WebkitTapHighlightColor: "transparent" }}
     >
-      {/* Agent name */}
+      {/* Outer shape (border effect) */}
       <div
-        className="text-[11px] sm:text-xs font-bold tracking-widest"
-        style={{ color: colors.text }}
-      >
-        {label}
-      </div>
-
-      {/* Stamp box — the main visual element */}
-      <div
-        className="w-[80px] h-[50px] sm:w-[100px] sm:h-[60px] border-2 flex items-center justify-center"
+        className="absolute inset-0 transition-all duration-500"
         style={{
-          borderColor: state === "winner" ? colors.border : colors.border + "66",
-          background: state === "winner" ? colors.border + "22" : "#0a0a0a",
-          animation: getAnimation(name, state),
+          clipPath: clip,
+          background: isThinking
+            ? `linear-gradient(135deg, ${NEUTRAL.panelBg}44, ${NEUTRAL.panelBg}22)`
+            : isRevealed
+              ? panelBg
+              : isReady
+                ? `${NEUTRAL.panelBg}88`
+                : `${NEUTRAL.panelBg}22`,
+          animation: isThinking
+            ? "thinking-pulse 1.2s ease-in-out infinite"
+            : isWinner
+              ? `${getWinnerAnimation(agent)} 1.5s ease-in-out infinite`
+              : isReady
+                ? "ready-pulse 1.5s ease-in-out infinite"
+                : undefined,
+        }}
+      />
+
+      {/* Inner panel */}
+      <div
+        className="absolute inset-[3px] flex flex-col items-center justify-center transition-all duration-500"
+        style={{
+          clipPath: clip,
+          background: isThinking
+            ? `${NEUTRAL.panelBg}11`
+            : isRevealed
+              ? `${panelBg}dd`
+              : isReady
+                ? `${NEUTRAL.panelBg}55`
+                : `${NEUTRAL.panelBg}15`,
         }}
       >
+        {/* Agent label */}
+        <div
+          className="text-[12px] font-bold tracking-wider mb-1"
+          style={{
+            color: isRevealed ? "#000000cc" : isReady ? "#ffffffaa" : "#ffffff33",
+          }}
+        >
+          {label}
+        </div>
+
+        {/* Status content */}
         {state === "idle" && (
-          <span className="text-[10px]" style={{ color: colors.text + "22" }}>—</span>
+          <span className="text-[10px]" style={{ color: "#ffffff22" }}>—</span>
         )}
 
         {state === "thinking" && (
           <div
             className="w-5 h-5 border-2 rounded-full animate-spin"
-            style={{ borderColor: colors.border + "33", borderTopColor: colors.text }}
+            style={{ borderColor: "#ffffff22", borderTopColor: "#ffffffaa" }}
           />
         )}
 
         {state === "ready" && (
-          <span className="blink text-base" style={{ color: colors.text }}>▶</span>
+          <span className="blink text-lg font-bold" style={{ color: "#ffffffaa" }}>▶</span>
         )}
 
-        {(state === "selected" || state === "winner") && agent?.action === "vote" && (
+        {isRevealed && agent?.action === "vote" && (
           <div
-            className="text-sm sm:text-base font-black tracking-wider stamp-in"
-            style={{ color: DECISION_DISPLAY[agent.decision!]?.color ?? colors.text }}
+            className="text-sm font-black tracking-wider stamp-in"
+            style={{
+              color: agent.decision === "반대" ? "#660000" : "#003366",
+            }}
           >
             {DECISION_DISPLAY[agent.decision!]?.text ?? agent.decision}
           </div>
         )}
 
-        {(state === "selected" || state === "winner") && agent?.action === "ask" && (
-          <span className="text-xs stamp-in" style={{ color: colors.text }}>?</span>
+        {isRevealed && agent?.action === "ask" && (
+          <span className="text-lg font-bold stamp-in" style={{ color: "#000000aa" }}>?</span>
+        )}
+
+        {/* Winner badge */}
+        {isWinner && (
+          <div
+            className="text-[8px] tracking-[0.2em] mt-1 stamp-in"
+            style={{ color: getResultTextColor(agent) }}
+          >
+            ★ SELECTED
+          </div>
         )}
       </div>
-
-      {/* Winner indicator */}
-      {state === "winner" && (
-        <div
-          className="text-[8px] tracking-[0.3em] stamp-in"
-          style={{ color: colors.text }}
-        >
-          ★ SELECTED
-        </div>
-      )}
     </div>
   );
 }
 
-export function MagiTriangle({ panelStates, agents, onPanelClick }: MagiTriangleProps) {
+export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, loading, deliberation, onRetry, showRetry }: MagiTriangleProps) {
   return (
-    <div className="flex flex-col items-center gap-2 w-full max-w-[340px] sm:max-w-[400px] mx-auto">
-      {/* BALTHASAR — top */}
-      <PanelBox
-        name="BALTHASAR"
-        state={panelStates[1]}
-        agent={agents[1]}
-        onClick={() => onPanelClick(1)}
-      />
-
-      {/* Connecting lines top */}
-      <svg width="200" height="30" viewBox="0 0 200 30" className="sm:w-[240px]">
-        <line x1="100" y1="0" x2="40" y2="30" stroke="#00ff4133" strokeWidth="1" />
-        <line x1="100" y1="0" x2="160" y2="30" stroke="#00ff4133" strokeWidth="1" />
-      </svg>
-
-      {/* MAGI center label */}
+    <div className="relative w-full" style={{ height: "280px" }}>
+      {/* System info — left of BALTHASAR */}
       <div
-        className="text-xs sm:text-sm font-bold tracking-[0.5em] -my-1"
-        style={{ color: "#00ff4188" }}
+        className="absolute z-20 text-[10px] leading-relaxed"
+        style={{ top: 4, left: 6, color: "#ff6a00cc" }}
       >
-        MAGI
+        <div className="font-bold text-[14px]" style={{ color: "#ff6a00" }}>苦悩解決</div>
+        <div>CODE : 127</div>
+        <div>FILE : AKAGI_CHK</div>
+        <div>PRIORITY : A──</div>
       </div>
 
-      {/* Connecting lines bottom */}
-      <svg width="200" height="30" viewBox="0 0 200 30" className="sm:w-[240px]">
-        <line x1="40" y1="0" x2="40" y2="30" stroke="#00ff4133" strokeWidth="1" />
-        <line x1="160" y1="0" x2="160" y2="30" stroke="#00ff4133" strokeWidth="1" />
-        <line x1="40" y1="30" x2="160" y2="30" stroke="#00ff4133" strokeWidth="1" />
+      {/* System info — right of BALTHASAR */}
+      <div
+        className="absolute z-20 text-[10px] leading-relaxed text-right"
+        style={{ top: 4, right: 6, color: "#ff6a00aa" }}
+      >
+        <div className="font-bold text-[14px]" style={{ color: "#ff6a00" }}>苦悩解決</div>
+        <div>
+          STATUS: {loading ? (
+            <span className="blink" style={{ color: "#ff3333" }}>ACTIVE</span>
+          ) : "STANDBY"}
+        </div>
+        {deliberation && (
+          <div
+            className="mt-0.5 px-1 py-0.5 border text-[8px] tracking-wider inline-block"
+            style={{
+              borderColor: "#ff6a0066",
+              color: loading ? "#ff6a00" : "#5cff8a",
+              background: "#ff6a0011",
+            }}
+          >
+            {deliberation}
+          </div>
+        )}
+        {showRetry && onRetry && (
+          <button
+            className="mt-1.5 px-2 py-1 border text-[8px] tracking-wider block ml-auto active:opacity-60"
+            style={{ borderColor: "#ff6a0066", color: "#ff6a00", background: "#ff6a0011" }}
+            onClick={onRetry}
+          >
+            RETRY ↻
+          </button>
+        )}
+      </div>
+
+      {/* SVG connecting lines */}
+      <svg
+        className="absolute inset-0 w-full h-full"
+        style={{ zIndex: 1, pointerEvents: "none" }}
+      >
+        {/* BALTHASAR bottom-left cut → CASPER top-right cut */}
+        <line x1="38%" y1="40%" x2="33.5%" y2="50.5%" stroke="#ff6a00" strokeWidth="2.5" />
+        {/* BALTHASAR bottom-right cut → MELCHIOR top-left cut */}
+        <line x1="62%" y1="40%" x2="66.5%" y2="50.5%" stroke="#ff6a00" strokeWidth="2.5" />
+        {/* CASPER right edge → MELCHIOR left edge */}
+        <line x1="43.6%" y1="68%" x2="56.4%" y2="68%" stroke="#ff6a00" strokeWidth="2.5" />
+        <text
+          x="50%"
+          y="57%"
+          textAnchor="middle"
+          fill="#ff3333"
+          fontSize="13"
+          fontWeight="bold"
+          fontFamily="Courier New, monospace"
+          letterSpacing="3"
+        >
+          MAGI
+        </text>
       </svg>
 
-      {/* CASPER & MELCHIOR — bottom row */}
-      <div className="flex justify-between w-full px-2">
+      {/* BALTHASAR — top center */}
+      <div
+        className="absolute z-10"
+        style={{ top: 0, left: "50%", transform: "translateX(-50%)", width: "42%", height: "46%" }}
+      >
+        <PanelBox
+          name="BALTHASAR"
+          state={panelStates[1]}
+          agent={agents[1]}
+          onClick={() => onPanelClick(1)}
+          variant="top"
+        />
+      </div>
+
+      {/* CASPER — bottom left */}
+      <div
+        className="absolute z-10"
+        style={{ bottom: 36, left: "2%", width: "42%", height: "42%" }}
+      >
         <PanelBox
           name="CASPER"
           state={panelStates[2]}
           agent={agents[2]}
           onClick={() => onPanelClick(2)}
+          variant="bottom-left"
         />
+      </div>
+
+      {/* MELCHIOR — bottom right */}
+      <div
+        className="absolute z-10"
+        style={{ bottom: 36, right: "2%", width: "42%", height: "42%" }}
+      >
         <PanelBox
           name="MELCHIOR"
           state={panelStates[0]}
           agent={agents[0]}
           onClick={() => onPanelClick(0)}
+          variant="bottom-right"
         />
       </div>
     </div>

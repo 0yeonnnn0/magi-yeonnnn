@@ -16,7 +16,7 @@ type AskResult = {
 type VoteResult = {
   agent: string;
   action: "vote";
-  decision: "찬성" | "반대" | "보류";
+  decision: "찬성" | "반대";
   reason: string;
   advice: string;
 };
@@ -60,12 +60,14 @@ async function callAgent(
 }
 
 export async function consult(messages: Message[]): Promise<MagiResponse> {
-  // Guard check on the latest user message
   const lastMessage = messages[messages.length - 1]?.content;
-  if (lastMessage) {
+  // Skip guard when the user is replying to agent questions (history has assistant messages)
+  const isFollowUp = messages.some((m) => m.role === "assistant");
+
+  if (lastMessage && !isFollowUp) {
     const guard = await checkGuard(lastMessage);
     if (!guard.allowed) {
-      return { phase: "blocked", reason: guard.reason || "MAGI는 연애 상담만 가능합니다." };
+      return { phase: "blocked", reason: guard.reason || "MAGI는 고민 상담만 가능합니다." };
     }
   }
 
@@ -76,10 +78,10 @@ export async function consult(messages: Message[]): Promise<MagiResponse> {
   const hasQuestion = results.some((r) => r.action === "ask");
 
   if (hasQuestion) {
-    return { phase: "ask", agents: results };
+    return { phase: "ask", agents: results.filter((r) => r.action === "ask") };
   }
 
-  const votes: Record<string, number> = { 찬성: 0, 반대: 0, 보류: 0 };
+  const votes: Record<string, number> = { 찬성: 0, 반대: 0 };
   results.forEach((r) => {
     if (r.action === "vote" && votes[r.decision] !== undefined) {
       votes[r.decision]++;

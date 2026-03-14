@@ -7,22 +7,38 @@ interface MagiHeaderProps {
 
 export function MagiHeader({ loading, deliberation }: MagiHeaderProps) {
   return (
-    <div className="px-3 pt-2 pb-1 text-[9px] sm:text-[10px] leading-relaxed" style={{ color: "#00ff4188" }}>
+    <div className="px-3 pt-2 pb-1" style={{ color: "#ff6a00" }}>
       {/* Top system info — matching the anime screen */}
-      <div className="border-b pb-1 mb-1" style={{ borderColor: "#00ff4122" }}>
-        <div style={{ color: "#00ff4155" }}>DIRECT LINE CONNECTION — MAGI</div>
-        <div>ACCESS MODE : <span style={{ color: "#00ff41" }}>SUPERUSER</span></div>
-      </div>
-      <div className="border-b pb-1 mb-1" style={{ borderColor: "#00ff4122" }}>
-        <div style={{ color: "#00ff4155" }}>RESULT OF THE DELIBERATION</div>
-        <div>MOTION : <span style={{ color: loading ? "#ff9100" : "#00ff41" }}>
-          {loading ? "ANALYZING..." : deliberation ?? "AWAITING INPUT"}
-        </span></div>
-      </div>
-      <div className="flex gap-4" style={{ color: "#00ff4144" }}>
-        <span>MAGI.SYS</span>
-        <span>STATUS: {loading ? <span className="blink" style={{ color: "#ff9100" }}>ACTIVE</span> : "STANDBY"}</span>
-        <span>PRIORITY: AAA</span>
+      <div className="flex items-start justify-between">
+        <div className="text-[9px] leading-relaxed" style={{ color: "#ff6a00cc" }}>
+          <div className="font-bold text-[11px]" style={{ color: "#ff6a00" }}>定期検診</div>
+          <div>CODE : <span style={{ color: "#ff6a00" }}>127</span></div>
+          <div>FILE : AKAGI_CHK</div>
+          <div>EX_MODE : ON</div>
+          <div>PRIORITY : A──</div>
+        </div>
+        <div className="text-right text-[9px] leading-relaxed">
+          <div className="font-bold text-[11px]" style={{ color: "#ff6a00" }}>定期検診</div>
+          <div style={{ color: "#ff6a00aa" }}>
+            STATUS: {loading ? (
+              <span className="blink" style={{ color: "#ff3333" }}>ACTIVE</span>
+            ) : (
+              <span>STANDBY</span>
+            )}
+          </div>
+          {deliberation && (
+            <div
+              className="mt-0.5 px-1.5 py-0.5 border text-[8px] tracking-wider inline-block"
+              style={{
+                borderColor: "#ff6a0066",
+                color: loading ? "#ff6a00" : "#5cff8a",
+                background: "#ff6a0011",
+              }}
+            >
+              {deliberation}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

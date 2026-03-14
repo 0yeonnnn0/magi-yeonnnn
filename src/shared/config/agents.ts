@@ -7,6 +7,7 @@ export const AGENT_COLORS: Record<
     border: string;
     bg: string;
     text: string;
+    panelBg: string;
     glow: string;
     thinking: string;
     winner: string;
@@ -14,42 +15,44 @@ export const AGENT_COLORS: Record<
   }
 > = {
   MELCHIOR: {
-    border: "#ff1744",
+    border: "#ff3333",
     bg: "#1a0008",
-    text: "#ff1744",
-    glow: "glow-red",
-    thinking: "thinking-red",
-    winner: "winner-red",
-    readyPulse: "ready-pulse-red",
+    text: "#ff3333",
+    panelBg: "#8de8a0",
+    glow: "glow-green",
+    thinking: "thinking-pulse",
+    winner: "winner-green",
+    readyPulse: "ready-pulse",
   },
   BALTHASAR: {
-    border: "#2979ff",
+    border: "#6ec6ff",
     bg: "#000a1a",
-    text: "#2979ff",
+    text: "#6ec6ff",
+    panelBg: "#7db8e0",
     glow: "glow-blue",
-    thinking: "thinking-blue",
+    thinking: "thinking-pulse",
     winner: "winner-blue",
-    readyPulse: "ready-pulse-blue",
+    readyPulse: "ready-pulse",
   },
   CASPER: {
-    border: "#00ff41",
+    border: "#5cff8a",
     bg: "#001a08",
-    text: "#00ff41",
+    text: "#5cff8a",
+    panelBg: "#8de8a0",
     glow: "glow-green",
-    thinking: "thinking-green",
+    thinking: "thinking-pulse",
     winner: "winner-green",
-    readyPulse: "ready-pulse-green",
+    readyPulse: "ready-pulse",
   },
 };
 
 export const AGENT_LABELS: Record<AgentName, string> = {
-  MELCHIOR: "MELCHIOR-1",
-  BALTHASAR: "BALTHASAR-2",
-  CASPER: "CASPER-3",
+  MELCHIOR: "MELCHIOR·1",
+  BALTHASAR: "BALTHASAR·2",
+  CASPER: "CASPER·3",
 };
 
 export const DECISION_DISPLAY: Record<string, { text: string; color: string }> = {
-  찬성: { text: "APPROVE", color: "#00ff41" },
-  반대: { text: "DENY", color: "#ff1744" },
-  보류: { text: "HOLD", color: "#ff9100" },
+  찬성: { text: "APPROVE", color: "#5cff8a" },
+  반대: { text: "DENY", color: "#ff3333" },
 };
