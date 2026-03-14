@@ -137,7 +137,7 @@ export default function MagiSystem() {
               {
                 id: crypto.randomUUID(),
                 role: "system",
-                content: `${AGENT_NAMES[wi]} 의견이 채택되었습니다: ${data.decision} (${data.votes?.찬성 ?? 0}찬성 / ${data.votes?.반대 ?? 0}반대)`,
+                content: `${AGENT_NAMES[wi]} 의견이 채택되었습니다:\n${data.decision} (${data.votes?.찬성 ?? 0}찬성 / ${data.votes?.반대 ?? 0}반대)`,
                 hint: true,
               },
             ]);
