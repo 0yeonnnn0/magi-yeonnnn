@@ -50,9 +50,9 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
 
   return (
     <div
-      className="flex flex-col border-t flex-1 min-h-0"
+      className="flex flex-col flex-1 min-h-0"
       style={{
-        borderColor: "#ff6a0066",
+        borderTop: "1.5px solid #ff6a0066",
         background: "#050505",
       }}
     >
@@ -123,8 +123,8 @@ export function MagiChat({ onSend, loading, messages, onTappableClick }: MagiCha
 
       {/* Input */}
       <div
-        className="flex items-end gap-2 px-3 py-2 border-t"
-        style={{ borderColor: "#ff6a0044", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
+        className="flex items-end gap-2 px-3 py-2"
+        style={{ borderTop: "1.5px solid #ff6a0044", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
       >
         <span className="text-[10px] py-1" style={{ color: "#ff6a00" }}>{">"}</span>
         <textarea
