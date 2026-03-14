@@ -101,6 +101,29 @@ export function MagiDetail({ name, agent, isWinner, onClose }: MagiDetailProps) 
               </span>
               {agent.advice}
             </div>
+
+            {/* Cross comments from other agents */}
+            {agent.comments && agent.comments.length > 0 && (
+              <div>
+                <div className="text-[10px] tracking-widest mb-2" style={{ color: "#ff6a0066" }}>
+                  OTHER SYSTEMS
+                </div>
+                <div className="space-y-2">
+                  {agent.comments.map((c, i) => (
+                    <div
+                      key={i}
+                      className="px-3 py-2 border rounded text-sm leading-relaxed"
+                      style={{ borderColor: "#ffffff11", background: "#ffffff06" }}
+                    >
+                      <span className="text-[10px] tracking-wider font-bold block mb-1" style={{ color: "#ff6a0088" }}>
+                        {c.agent}
+                      </span>
+                      <span style={{ color: "#ffffffaa" }}>{c.comment}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

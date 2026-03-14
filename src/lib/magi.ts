@@ -19,6 +19,7 @@ type VoteResult = {
   decision: "찬성" | "반대";
   reason: string;
   advice: string;
+  comments?: { agent: string; comment: string }[];
 };
 
 type AgentResult = AskResult | VoteResult;
@@ -64,13 +65,36 @@ async function callAgent(
   return JSON.parse(res.choices[0].message.content!);
 }
 
+async function getCrossComment(
+  commenterAgent: (typeof agents)[number],
+  targetAgent: string,
+  targetDecision: string,
+  targetReason: string,
+): Promise<string> {
+  const res = await getClient().chat.completions.create({
+    model: process.env.OPENAI_MODEL || "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: `너는 ${commenterAgent.name}이다. 다른 시스템의 의견에 대해 한 줄로 짧게 첨언해. 네 관점(${commenterAgent.name === "MELCHIOR" ? "찬성" : commenterAgent.name === "CASPER" ? "반대" : "중립"})에서 코멘트해. 반드시 JSON으로 응답: {"comment": "한 줄 첨언"}`,
+      },
+      {
+        role: "user",
+        content: `${targetAgent}의 의견 (${targetDecision}): ${targetReason}`,
+      },
+    ],
+    response_format: { type: "json_object" },
+  });
+
+  const parsed = JSON.parse(res.choices[0].message.content!);
+  return parsed.comment;
+}
+
 export async function consult(messages: Message[]): Promise<MagiResponse> {
   const lastMessage = messages[messages.length - 1]?.content;
-  // Skip guard when the user is replying to agent questions (history has assistant messages)
   const isFollowUp = messages.some((m) => m.role === "assistant");
 
   if (lastMessage) {
-    // For follow-ups, pass previous assistant questions as context
     const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
     const guard = await checkGuard(lastMessage, isFollowUp ? lastAssistant?.content : undefined);
 
@@ -86,8 +110,7 @@ export async function consult(messages: Message[]): Promise<MagiResponse> {
   }
 
   // Call agents sequentially: MELCHIOR → CASPER → BALTHASAR
-  // Each agent sees previous agents' questions to avoid duplicates
-  const order = [0, 2, 1]; // MELCHIOR, CASPER, BALTHASAR
+  const order = [0, 2, 1];
   const results: AgentResult[] = [undefined!, undefined!, undefined!];
   const priorQuestions: string[] = [];
 
@@ -114,6 +137,30 @@ export async function consult(messages: Message[]): Promise<MagiResponse> {
 
   if (hasQuestion) {
     return { phase: "ask", agents: results.filter((r) => r.action === "ask") };
+  }
+
+  // Cross-comment round: for each agent's opinion, other agents comment on it
+  for (let targetIdx = 0; targetIdx < 3; targetIdx++) {
+    const target = results[targetIdx];
+    if (target.action !== "vote") continue;
+
+    const comments: { agent: string; comment: string }[] = [];
+    const otherIndices = [0, 1, 2].filter((i) => i !== targetIdx);
+
+    const commentResults = await Promise.all(
+      otherIndices.map(async (commenterIdx) => {
+        const comment = await getCrossComment(
+          agents[commenterIdx],
+          target.agent,
+          target.decision,
+          target.reason,
+        );
+        return { agent: agents[commenterIdx].name, comment };
+      })
+    );
+
+    comments.push(...commentResults);
+    (target as VoteResult).comments = comments;
   }
 
   const votes: Record<string, number> = { 찬성: 0, 반대: 0 };

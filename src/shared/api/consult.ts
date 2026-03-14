@@ -5,6 +5,7 @@ export type AgentResult = {
   decision?: string;
   reason?: string;
   advice?: string;
+  comments?: { agent: string; comment: string }[];
 };
 
 export type MagiResponse = {
