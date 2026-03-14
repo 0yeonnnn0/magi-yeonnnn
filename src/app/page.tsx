@@ -59,14 +59,13 @@ export default function MagiSystem() {
         setPanelStates(["idle", "idle", "idle"]);
         setDeliberation("WELCOME");
         addSystemMessage(
-          "MAGI SYSTEM에 오신 것을 환영합니다.\n\n" +
-          "저는 3개의 AI 모델이 토론하여 당신의 고민을 판정하는 시스템입니다.\n\n" +
-          "• MELCHIOR — 찬성 관점에서 분석\n" +
-          "• BALTHASAR — 중립적 심판관\n" +
-          "• CASPER — 반대 관점에서 분석\n\n" +
+          "저는 3개의 시스템이 토론하여 당신의 고민을 판정하는 MAGI입니다.\n\n" +
+          "• MELCHIOR — 찬성 관점의 시스템\n" +
+          "• BALTHASAR — 중립적 심판\n" +
+          "• CASPER — 반대 관점의 시스템\n\n" +
           "연애, 진로, 재정, 건강, 인생 등 어떤 고민이든 입력해주세요.\n" +
-          "3개의 모델이 토론 후 최종 판정을 내립니다.\n\n" +
-          "판정 후 상단의 시스템을 탭하면 각 모델의 상세 의견을 확인할 수 있습니다."
+          "3개의 시스템이 토론 후 최종 판정을 내립니다.\n\n" +
+          "판정 후 상단의 시스템을 탭하면 각 시스템의 상세 의견을 확인할 수 있습니다."
         );
         return;
       }
