@@ -48,7 +48,18 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    const history: Message[] = [{ role: "user", content: message }];
+    // Load conversation history from DB
+    const { data: rows } = await supabase
+      .from("messages")
+      .select("role, content")
+      .eq("session_id", id)
+      .order("created_at", { ascending: true });
+
+    const history: Message[] = (rows ?? []).map((r) => ({
+      role: r.role as "user" | "assistant",
+      content: r.content,
+    }));
+
     const result = await consult(history);
 
     if (result.phase === "greeting" || result.phase === "blocked") {
