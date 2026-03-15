@@ -1,19 +1,14 @@
 export type AgentResult = {
   agent: string;
-  action: "ask" | "vote";
-  question?: string;
-  decision?: string;
-  reason?: string;
-  advice?: string;
-  comments?: { agent: string; comment: string }[];
-  persuaded?: boolean;
-  finalDecision?: string;
-  finalReason?: string;
+  action: "vote";
+  decision: string;
+  reason: string;
+  advice: string;
 };
 
 export type MagiResponse = {
   sessionId: string;
-  phase: "ask" | "vote" | "blocked" | "greeting";
+  phase: "vote" | "blocked" | "greeting";
   decision?: string;
   votes?: Record<string, number>;
   agents?: AgentResult[];

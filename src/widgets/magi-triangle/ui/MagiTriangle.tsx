@@ -16,30 +16,18 @@ interface MagiTriangleProps {
 }
 
 const NEUTRAL = { panelBg: "#b0b0b0" };
-const POSITIVE_BG = "#7db8e0";
-const NEGATIVE_BG = "#e08080";
-const HOLD_BG = "#c0a870";
+const ACTIVE_BG = "#8de8a0";
 
-function getResultColor(agent?: AgentResult) {
-  if (!agent || agent.action !== "vote") return NEUTRAL.panelBg;
-  // Use finalDecision if available (after debate), otherwise initial decision
-  const decision = agent.finalDecision ?? agent.decision;
-  if (decision === "찬성") return POSITIVE_BG;
-  if (decision === "반대") return NEGATIVE_BG;
-  return HOLD_BG;
+function getResultColor() {
+  return ACTIVE_BG;
 }
 
-function getWinnerAnimation(agent?: AgentResult) {
-  if (!agent || agent.action !== "vote") return "winner-blue";
-  if (agent.decision === "반대") return "winner-red";
-  return "winner-blue";
+function getWinnerAnimation() {
+  return "winner-green";
 }
 
-function getResultTextColor(agent?: AgentResult) {
-  if (!agent || agent.action !== "vote") return "#6ec6ff";
-  if (agent.decision === "찬성") return "#6ec6ff";
-  if (agent.decision === "반대") return "#ff4444";
-  return "#ffaa00";
+function getResultTextColor() {
+  return "#5cff8a";
 }
 
 // Clip paths matching the anime:
@@ -73,7 +61,7 @@ function PanelBox({
   const isReady = state === "ready";
   const isRevealed = state === "selected" || state === "winner";
 
-  const panelBg = isRevealed ? getResultColor(agent) : NEUTRAL.panelBg;
+  const panelBg = isRevealed ? getResultColor() : NEUTRAL.panelBg;
   const clip = CLIP_PATHS[variant];
 
   return (
@@ -97,7 +85,7 @@ function PanelBox({
           animation: isThinking
             ? "thinking-pulse 1.2s ease-in-out infinite"
             : isWinner
-              ? `${getWinnerAnimation(agent)} 1.5s ease-in-out infinite`
+              ? `${getWinnerAnimation()} 1.5s ease-in-out infinite`
               : isReady
                 ? "ready-pulse 1.5s ease-in-out infinite"
                 : undefined,
@@ -146,24 +134,18 @@ function PanelBox({
 
         {isRevealed && agent?.action === "vote" && (
           <div
-            className="text-sm font-black tracking-wider stamp-in"
-            style={{
-              color: agent.decision === "반대" ? "#660000" : "#003366",
-            }}
+            className="text-[10px] font-black tracking-wider stamp-in text-center px-1"
+            style={{ color: "#003322" }}
           >
-            {DECISION_DISPLAY[agent.decision!]?.text ?? agent.decision}
+            {agent.decision}
           </div>
-        )}
-
-        {isRevealed && agent?.action === "ask" && (
-          <span className="text-lg font-bold stamp-in" style={{ color: "#000000aa" }}>?</span>
         )}
 
         {/* Winner badge */}
         {isWinner && (
           <div
             className="text-[8px] tracking-[0.2em] mt-1 stamp-in"
-            style={{ color: getResultTextColor(agent) }}
+            style={{ color: getResultTextColor() }}
           >
             ★ SELECTED
           </div>

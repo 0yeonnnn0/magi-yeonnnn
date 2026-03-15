@@ -131,16 +131,6 @@ export function MagiPanel({ name, state, agent, onClick }: MagiPanelProps) {
               </div>
             )}
 
-            {agent.action === "ask" && (
-              <div className="flex flex-col items-center gap-3">
-                <div className="text-xs tracking-widest mb-2" style={{ color: colors.text + "66" }}>
-                  ADDITIONAL DATA REQUIRED
-                </div>
-                <div className="text-sm" style={{ color: colors.text }}>
-                  &quot;{agent.question}&quot;
-                </div>
-              </div>
-            )}
           </>
         )}
       </div>
