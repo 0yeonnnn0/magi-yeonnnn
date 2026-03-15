@@ -13,21 +13,18 @@ interface MagiTriangleProps {
   deliberation?: string;
   onRetry?: () => void;
   showRetry?: boolean;
+  winnerDecision?: string;
 }
 
 const NEUTRAL = { panelBg: "#b0b0b0" };
-const ACTIVE_BG = "#8de8a0";
+const COLOR_A = { bg: "#7db8e0", text: "#6ec6ff", winner: "winner-blue", dark: "#003366" };
+const COLOR_B = { bg: "#e08080", text: "#ff4444", winner: "winner-red", dark: "#660000" };
 
-function getResultColor() {
-  return ACTIVE_BG;
-}
-
-function getWinnerAnimation() {
-  return "winner-green";
-}
-
-function getResultTextColor() {
-  return "#5cff8a";
+function getTeamColor(agent?: AgentResult, winnerDecision?: string) {
+  if (!agent || agent.action !== "vote") return null;
+  // First unique decision = A (blue), other = B (red)
+  if (agent.decision === winnerDecision) return COLOR_A;
+  return COLOR_B;
 }
 
 // Clip paths matching the anime:
@@ -46,12 +43,14 @@ function PanelBox({
   agent,
   onClick,
   variant,
+  winnerDecision,
 }: {
   name: AgentName;
   state: PanelState;
   agent?: AgentResult;
   onClick: () => void;
   variant: "top" | "bottom-left" | "bottom-right";
+  winnerDecision?: string;
 }) {
   const label = AGENT_LABELS[name];
   const clickable = state === "ready" || state === "selected" || state === "winner";
@@ -61,7 +60,8 @@ function PanelBox({
   const isReady = state === "ready";
   const isRevealed = state === "selected" || state === "winner";
 
-  const panelBg = isRevealed ? getResultColor() : NEUTRAL.panelBg;
+  const team = getTeamColor(agent, winnerDecision);
+  const panelBg = isRevealed && team ? team.bg : NEUTRAL.panelBg;
   const clip = CLIP_PATHS[variant];
 
   return (
@@ -85,7 +85,7 @@ function PanelBox({
           animation: isThinking
             ? "thinking-pulse 1.2s ease-in-out infinite"
             : isWinner
-              ? `${getWinnerAnimation()} 1.5s ease-in-out infinite`
+              ? `${team?.winner ?? "winner-green"} 1.5s ease-in-out infinite`
               : isReady
                 ? "ready-pulse 1.5s ease-in-out infinite"
                 : undefined,
@@ -135,7 +135,7 @@ function PanelBox({
         {isRevealed && agent?.action === "vote" && (
           <div
             className="text-[10px] font-black tracking-wider stamp-in text-center px-1"
-            style={{ color: "#003322" }}
+            style={{ color: team?.dark ?? "#003322" }}
           >
             {agent.decision}
           </div>
@@ -145,7 +145,7 @@ function PanelBox({
         {isWinner && (
           <div
             className="text-[8px] tracking-[0.2em] mt-1 stamp-in"
-            style={{ color: getResultTextColor() }}
+            style={{ color: team?.text ?? "#5cff8a" }}
           >
             ★ SELECTED
           </div>
@@ -155,7 +155,7 @@ function PanelBox({
   );
 }
 
-export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, loading, deliberation, onRetry, showRetry }: MagiTriangleProps) {
+export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, loading, deliberation, onRetry, showRetry, winnerDecision }: MagiTriangleProps) {
   return (
     <div className="relative w-full" style={{ height: "min(280px, 40dvh)" }}>
       {/* System info — left of BALTHASAR */}
@@ -239,6 +239,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
           agent={agents[1]}
           onClick={() => onPanelClick(1)}
           variant="top"
+          winnerDecision={winnerDecision}
         />
       </div>
 
@@ -253,6 +254,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
           agent={agents[2]}
           onClick={() => onPanelClick(2)}
           variant="bottom-left"
+          winnerDecision={winnerDecision}
         />
       </div>
 
@@ -267,6 +269,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
           agent={agents[0]}
           onClick={() => onPanelClick(0)}
           variant="bottom-right"
+          winnerDecision={winnerDecision}
         />
       </div>
     </div>

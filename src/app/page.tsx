@@ -72,21 +72,21 @@ export default function MagiSystem() {
 
       setResponse(data);
 
-      // Sequential reveal: MELCHIOR → CASPER → BALTHASAR (1초+ 간격)
+      // Sequential reveal: MELCHIOR → CASPER → BALTHASAR (2초 간격)
       setTimeout(() => {
         setPanelStates(["selected", "idle", "thinking"]);
         setRevealedPanels([true, false, false]);
-      }, 1200);
+      }, 2000);
 
       setTimeout(() => {
         setPanelStates(["selected", "thinking", "selected"]);
         setRevealedPanels([true, false, true]);
-      }, 2400);
+      }, 4000);
 
       setTimeout(() => {
         setPanelStates(["selected", "selected", "selected"]);
         setRevealedPanels([true, true, true]);
-      }, 3600);
+      }, 6000);
 
       setTimeout(() => {
         setLoading(false);
@@ -125,7 +125,7 @@ export default function MagiSystem() {
         } else {
           setDeliberation("VOTE COMPLETE");
         }
-      }, 4000);
+      }, 7000);
     } catch {
       setLoading(false);
       setPanelStates(["idle", "idle", "idle"]);
@@ -173,6 +173,7 @@ export default function MagiSystem() {
             deliberation={deliberation}
             onRetry={handleRetry}
             showRetry={hasResult}
+            winnerDecision={response?.decision}
           />
         </div>
 
