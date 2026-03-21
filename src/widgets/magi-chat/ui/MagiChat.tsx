@@ -136,7 +136,7 @@ export function MagiChat({ onSend, onRetry, loading, showRetry }: MagiChatProps)
             border: "1.5px dashed #ff6a0033",
           }}
         >
-          + ...
+          +
         </button>
       </div>
 
