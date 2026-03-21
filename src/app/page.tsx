@@ -19,6 +19,7 @@ export default function MagiSystem() {
   const [revealedPanels, setRevealedPanels] = useState<boolean[]>([false, false, false]);
   const [winnerIndex, setWinnerIndex] = useState<number | null>(null);
   const [detailIndex, setDetailIndex] = useState<number | null>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   async function handleSend(message: string) {
     setLastQuestion(message);
@@ -116,6 +117,7 @@ export default function MagiSystem() {
     setRevealedPanels([false, false, false]);
     setWinnerIndex(null);
     setDetailIndex(null);
+    setResetKey((k) => k + 1);
   }
 
   function handlePanelClick(index: number) {
@@ -149,6 +151,7 @@ export default function MagiSystem() {
         </div>
 
         <MagiChat
+          key={resetKey}
           loading={loading}
           onSend={handleSend}
           onRetry={handleRetry}
