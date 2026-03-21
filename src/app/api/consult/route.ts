@@ -33,32 +33,35 @@ export async function POST(req: NextRequest) {
       .select("id")
       .single();
     id = data?.id;
-  } else {
-    await supabase
-      .from("sessions")
-      .update({ last_active_at: new Date().toISOString() })
-      .eq("id", id);
   }
 
-  // Save user message
-  await supabase.from("messages").insert({
-    session_id: id,
-    role: "user",
-    content: message,
-  });
-
-  try {
-    // Load conversation history from DB
-    const { data: rows } = await supabase
+  // Save message + load history + update session in parallel
+  const [, { data: rows }] = await Promise.all([
+    supabase.from("messages").insert({
+      session_id: id,
+      role: "user",
+      content: message,
+    }),
+    supabase
       .from("messages")
       .select("role, content")
       .eq("session_id", id)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true }),
+    ...(sessionId
+      ? [supabase.from("sessions").update({ last_active_at: new Date().toISOString() }).eq("id", id)]
+      : []),
+  ]);
 
-    const history: Message[] = (rows ?? []).map((r) => ({
+  try {
+    const savedRows = rows ?? [];
+    // Append current message if not yet in DB result (race condition)
+    const history: Message[] = savedRows.map((r) => ({
       role: r.role as "user" | "assistant",
       content: r.content,
     }));
+    if (!history.some((m) => m.role === "user" && m.content === message)) {
+      history.push({ role: "user", content: message });
+    }
 
     const result = await consult(history);
 
@@ -66,18 +69,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ sessionId: id, ...result });
     }
 
-    // Save votes
+    // Save votes in parallel (non-blocking for response)
     if (result.phase === "vote") {
-      for (const agent of result.agents) {
-        await supabase.from("messages").insert({
-          session_id: id,
-          role: "assistant",
-          content: agent.decision,
-          agent: agent.agent,
-          phase: "vote",
-          decision: agent.decision,
-        });
-      }
+      Promise.all(
+        result.agents.map((agent) =>
+          supabase.from("messages").insert({
+            session_id: id,
+            role: "assistant",
+            content: agent.decision,
+            agent: agent.agent,
+            phase: "vote",
+            decision: agent.decision,
+          })
+        )
+      ).catch((err) => console.error("Vote save error:", err));
     }
 
     return NextResponse.json({ sessionId: id, ...result });
