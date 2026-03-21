@@ -136,51 +136,33 @@ export function MagiChat({ onSend, onRetry, loading, showRetry }: MagiChatProps)
             border: "1.5px dashed #ff6a0033",
           }}
         >
-          + ...
+          +
         </button>
-      </div>
 
-      {/* Bottom bar */}
-      <div
-        className="flex items-center gap-2 px-3 py-2"
-        style={{
-          borderTop: "1.5px solid #ff6a0044",
-          paddingBottom: "max(8px, env(safe-area-inset-bottom))",
-        }}
-      >
-        {/* Retry button — left side */}
-        {showRetry && (
+        {/* Action buttons */}
+        <div className="flex gap-2 pt-2" style={{ paddingBottom: "max(4px, env(safe-area-inset-bottom))" }}>
+          {showRetry && (
+            <button
+              onClick={onRetry}
+              disabled={loading}
+              className="flex-1 py-3 text-[11px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 transition-opacity"
+              style={{ borderColor: "#ff6a0066", color: "#ff6a00" }}
+            >
+              RETRY
+            </button>
+          )}
           <button
-            onClick={onRetry}
-            disabled={loading}
-            className="px-3 py-1.5 text-[10px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 flex-shrink-0"
-            style={{ borderColor: "#ff6a0066", color: "#ff6a00" }}
+            onClick={handleSubmit}
+            disabled={!canSend}
+            className="flex-1 py-3 text-[11px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 transition-opacity"
+            style={{
+              borderColor: canSend ? "#ff6a00" : "#ff6a0033",
+              color: canSend ? "#ff6a00" : "#ff6a0033",
+            }}
           >
-            RETRY
+            SEND
           </button>
-        )}
-
-        <span className="text-[10px]" style={{ color: "#ff6a00" }}>{">"}</span>
-        <span
-          className="flex-1 text-[11px] truncate"
-          style={{ color: question ? "#ff6a00aa" : "#ff6a0033" }}
-        >
-          {question ? `${question} ?` : "A vs B ?"}
-        </span>
-        <div
-          className="w-[3px] h-[14px] rounded-full"
-          style={{
-            background: canSend ? "#5cff8a" : "#ff6a0033",
-          }}
-        />
-        <button
-          onClick={handleSubmit}
-          disabled={!canSend}
-          className="px-3 py-1.5 text-[10px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 flex-shrink-0"
-          style={{ borderColor: "#ff6a0066", color: "#ff6a00" }}
-        >
-          SEND
-        </button>
+        </div>
       </div>
     </div>
   );
