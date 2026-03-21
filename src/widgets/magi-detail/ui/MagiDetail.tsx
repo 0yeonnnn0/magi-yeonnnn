@@ -74,8 +74,8 @@ export function MagiDetail({ name, agent, isWinner, onClose }: MagiDetailProps) 
             <div className="text-[10px] tracking-widest mb-1.5" style={{ color: "#ff6a0066" }}>
               REASON
             </div>
-            <div className="text-sm leading-relaxed" style={{ color: "#ffffffbb" }}>
-              {agent.reason}
+            <div className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "#ffffffbb" }}>
+              {agent.reason.replace(/\. /g, ".\n")}
             </div>
           </div>
         )}
