@@ -18,34 +18,75 @@ interface MagiChatProps {
 }
 
 export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
-  const [input, setInput] = useState("");
+  const [choices, setChoices] = useState<string[]>(["", ""]);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  useEffect(() => {
-    const ta = textareaRef.current;
-    if (ta) {
-      ta.style.height = "auto";
-      ta.style.height = Math.min(ta.scrollHeight, 60) + "px";
-    }
-  }, [input]);
+  function updateChoice(index: number, value: string) {
+    setChoices((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  }
+
+  function removeChoice(index: number) {
+    if (choices.length <= 2) return;
+    setChoices((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addChoice() {
+    setChoices((prev) => [...prev, ""]);
+    setTimeout(() => {
+      const lastInput = inputRefs.current[choices.length];
+      lastInput?.focus();
+    }, 50);
+  }
+
+  function buildQuestion(): string {
+    const filled = choices.map((c) => c.trim()).filter(Boolean);
+    return filled.join(" vs ");
+  }
 
   function handleSubmit() {
-    if (!input.trim() || loading) return;
-    onSend(input.trim());
-    setInput("");
+    const question = buildQuestion();
+    if (!question || loading) return;
+    const filledCount = choices.filter((c) => c.trim()).length;
+    if (filledCount < 2) return;
+    onSend(question);
+    setChoices(["", ""]);
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, index: number) {
+    if (e.key === "Enter") {
       e.preventDefault();
-      handleSubmit();
+      const filledCount = choices.filter((c) => c.trim()).length;
+      if (filledCount >= 2) {
+        handleSubmit();
+      } else {
+        // Focus next input or add new one
+        if (index === choices.length - 1) {
+          addChoice();
+        } else {
+          inputRefs.current[index + 1]?.focus();
+        }
+      }
+    } else if (e.key === "Backspace" && !choices[index] && choices.length > 2) {
+      e.preventDefault();
+      removeChoice(index);
+      setTimeout(() => {
+        inputRefs.current[Math.max(0, index - 1)]?.focus();
+      }, 50);
     }
   }
+
+  const question = buildQuestion();
+  const filledCount = choices.filter((c) => c.trim()).length;
+  const canSend = filledCount >= 2 && !loading;
 
   return (
     <div
@@ -58,8 +99,11 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {messages.length === 0 && !loading && (
-          <div className="text-[14px] text-center py-6 leading-loose" style={{ color: "#ff6a0044" }}>
-            A vs B ?<br /><br />MAGI will judge it.
+          <div
+            className="text-[13px] text-center py-4 leading-relaxed"
+            style={{ color: "#ff6a0044" }}
+          >
+            A vs B ?<br />MAGI will judge it.
           </div>
         )}
 
@@ -114,26 +158,93 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
+      {/* Choice cards area */}
       <div
-        className="flex items-end gap-2 px-3 py-2"
-        style={{ borderTop: "1.5px solid #ff6a0044", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
+        className="px-4 py-3 space-y-2 overflow-y-auto"
+        style={{
+          borderTop: "1.5px solid #ff6a0033",
+          maxHeight: "45vh",
+        }}
       >
-        <span className="text-[10px] py-1" style={{ color: "#ff6a00" }}>{">"}</span>
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="A vs B ?"
+        {/* Question label */}
+        <div
+          className="text-center text-[12px] tracking-wider pb-1"
+          style={{ color: question ? "#ff6a00aa" : "#ff6a0044" }}
+        >
+          {question ? `${question} ?` : "선택지를 입력하세요"}
+        </div>
+
+        {/* Choice inputs */}
+        {choices.map((choice, i) => (
+          <div key={i} className="relative group">
+            <input
+              ref={(el) => { inputRefs.current[i] = el; }}
+              type="text"
+              value={choice}
+              onChange={(e) => updateChoice(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, i)}
+              placeholder={`선택지 ${i + 1}`}
+              disabled={loading}
+              className="w-full px-4 py-3 text-sm bg-transparent rounded-sm outline-none placeholder:opacity-30 disabled:opacity-20"
+              style={{
+                color: "#ff6a00",
+                border: choice.trim()
+                  ? "1.5px solid #ff6a0088"
+                  : "1.5px solid #ff6a0033",
+                caretColor: "#ff6a00",
+              }}
+            />
+            {choices.length > 2 && (
+              <button
+                onClick={() => removeChoice(i)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] opacity-0 group-hover:opacity-60 active:opacity-100 transition-opacity px-1"
+                style={{ color: "#ff6a00" }}
+                tabIndex={-1}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+
+        {/* Add choice button */}
+        <button
+          onClick={addChoice}
           disabled={loading}
-          rows={1}
-          className="flex-1 bg-transparent text-sm placeholder:opacity-80 resize-none leading-snug overflow-y-auto"
-          style={{ color: "#ff6a00", caretColor: "#ff6a00", outline: "none", maxHeight: "60px" }}
+          className="w-full py-3 text-sm tracking-wider rounded-sm disabled:opacity-20 active:opacity-60 transition-opacity"
+          style={{
+            color: "#ff6a0066",
+            border: "1.5px dashed #ff6a0033",
+          }}
+        >
+          + ...
+        </button>
+      </div>
+
+      {/* Bottom bar */}
+      <div
+        className="flex items-center gap-2 px-3 py-2"
+        style={{
+          borderTop: "1.5px solid #ff6a0044",
+          paddingBottom: "max(8px, env(safe-area-inset-bottom))",
+        }}
+      >
+        <span className="text-[10px]" style={{ color: "#ff6a00" }}>{">"}</span>
+        <span
+          className="flex-1 text-[11px] truncate"
+          style={{ color: question ? "#ff6a00aa" : "#ff6a0033" }}
+        >
+          {question ? `${question} ?` : "A vs B ?"}
+        </span>
+        <div
+          className="w-[3px] h-[14px] rounded-full"
+          style={{
+            background: canSend ? "#5cff8a" : "#ff6a0033",
+          }}
         />
         <button
           onClick={handleSubmit}
-          disabled={loading || !input.trim()}
+          disabled={!canSend}
           className="px-3 py-1.5 text-[10px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 flex-shrink-0"
           style={{ borderColor: "#ff6a0066", color: "#ff6a00" }}
         >
