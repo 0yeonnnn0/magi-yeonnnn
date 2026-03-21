@@ -198,7 +198,7 @@ export function MagiTriangle({ panelStates, agents, onPanelClick, winnerIndex, l
             style={{ borderColor: "#ff6a0066", color: "#ff6a00", background: "#ff6a0011" }}
             onClick={onRetry}
           >
-            RETRY ↻
+            RESET ⟲
           </button>
         )}
       </div>

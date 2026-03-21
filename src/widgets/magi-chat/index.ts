@@ -1,1 +1,1 @@
-export { MagiChat, type ChatMessage } from "./ui/MagiChat";
+export { MagiChat } from "./ui/MagiChat";

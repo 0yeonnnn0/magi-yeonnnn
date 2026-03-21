@@ -2,29 +2,16 @@
 
 import { useState, useRef, useEffect } from "react";
 
-type ChatMessage = {
-  id: string;
-  role: "user" | "system";
-  content: string;
-  agent?: string;
-  tappable?: boolean;
-  hint?: boolean;
-};
-
 interface MagiChatProps {
   onSend: (message: string) => void;
+  onRetry: () => void;
   loading: boolean;
-  messages: ChatMessage[];
+  showRetry: boolean;
 }
 
-export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
+export function MagiChat({ onSend, onRetry, loading, showRetry }: MagiChatProps) {
   const [choices, setChoices] = useState<string[]>(["", ""]);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
 
   function updateChoice(index: number, value: string) {
     setChoices((prev) => {
@@ -58,7 +45,6 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
     const filledCount = choices.filter((c) => c.trim()).length;
     if (filledCount < 2) return;
     onSend(question);
-    setChoices(["", ""]);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, index: number) {
@@ -68,7 +54,6 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
       if (filledCount >= 2) {
         handleSubmit();
       } else {
-        // Focus next input or add new one
         if (index === choices.length - 1) {
           addChoice();
         } else {
@@ -96,75 +81,9 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
         background: "#050505",
       }}
     >
-      {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
-        {messages.length === 0 && !loading && (
-          <div
-            className="text-[13px] text-center py-4 leading-relaxed"
-            style={{ color: "#ff6a0044" }}
-          >
-            A vs B ?<br />MAGI will judge it.
-          </div>
-        )}
-
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className="max-w-[85%] px-3 py-2 rounded text-xs"
-              style={{
-                background: msg.role === "user" ? "#ff6a0018" : "#ffffff0a",
-                color: msg.role === "user" ? "#ff6a00" : "#ff6a00cc",
-                border: `1px solid ${msg.role === "user" ? "#ff6a0055" : msg.hint ? "#ff6a0055" : "#ffffff1a"}`,
-              }}
-            >
-              {msg.role === "system" && (
-                <span className="text-[10px] block mb-1" style={{ color: "#ff6a0077" }}>
-                  MAGI &gt;
-                </span>
-              )}
-              <span className="whitespace-pre-wrap">{msg.content}</span>
-              {msg.hint && (
-                <span className="text-[10px] block mt-1.5" style={{ color: "#ff6a0088" }}>
-                  ▶ 모델을 탭하여 상세 의견 보기
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {/* Loading */}
-        {loading && (
-          <div className="flex justify-start">
-            <div
-              className="px-3 py-2 rounded text-xs"
-              style={{ background: "#ffffff0a", border: "1px solid #ffffff1a" }}
-            >
-              <span className="text-[10px] block mb-1" style={{ color: "#ff6a0077" }}>
-                MAGI &gt;
-              </span>
-              <span style={{ color: "#ff6a00cc" }}>MAGI가 당신의 요청을 분석중입니다</span>
-              <span className="inline-flex ml-1 gap-[2px] align-middle">
-                <span className="dot-1 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
-                <span className="dot-2 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
-                <span className="dot-3 inline-block w-1 h-1 rounded-full" style={{ background: "#ff6a00cc" }} />
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div ref={bottomRef} />
-      </div>
-
       {/* Choice cards area */}
       <div
-        className="px-4 py-3 space-y-2 overflow-y-auto"
-        style={{
-          borderTop: "1.5px solid #ff6a0033",
-          maxHeight: "45vh",
-        }}
+        className="flex-1 overflow-y-auto px-4 py-3 space-y-2"
       >
         {/* Question label */}
         <div
@@ -229,6 +148,18 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
           paddingBottom: "max(8px, env(safe-area-inset-bottom))",
         }}
       >
+        {/* Retry button — left side */}
+        {showRetry && (
+          <button
+            onClick={onRetry}
+            disabled={loading}
+            className="px-3 py-1.5 text-[10px] tracking-widest border rounded-sm disabled:opacity-20 active:opacity-60 flex-shrink-0"
+            style={{ borderColor: "#ff6a0066", color: "#ff6a00" }}
+          >
+            RETRY
+          </button>
+        )}
+
         <span className="text-[10px]" style={{ color: "#ff6a00" }}>{">"}</span>
         <span
           className="flex-1 text-[11px] truncate"
@@ -254,5 +185,3 @@ export function MagiChat({ onSend, loading, messages }: MagiChatProps) {
     </div>
   );
 }
-
-export type { ChatMessage };
